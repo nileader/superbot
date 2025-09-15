@@ -1,0 +1,14 @@
+{
+  "name": "superbot",
+  "description": "产品驱动的 AI 编程协作技能 — 自动管理产品 SPEC 文件，实时沉淀产品决策",
+  "plugins": [
+    {
+      "name": "superbot",
+      "source": {
+        "source": "directory",
+        "path": "skills/superbot"
+      },
+      "description": "产品驱动的 AI 编程协作技能。在每次新 session 启动时自动激活，读取 .superbot/superbot.json 获取项目配置，管理 spec_dir 下的 SPEC 文件体系，并在对话中实时将产品决策沉淀到 SPEC 文件。"
+    }
+  ]
+}
