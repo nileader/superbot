@@ -1,6 +1,6 @@
 {
   "name": "superbot",
-  "version": "0.0.3",
+  "version": "0.0.4",
   "description": "产品驱动的 AI 编程协作技能 — 自动管理产品 SPEC 文件，实时沉淀产品决策",
   "plugins": [
     {

@@ -1,40 +1,43 @@
 # SuperBot
 
-产品驱动的 AI 编程协作技能 — 让 AI 自动管理产品 SPEC 文件，实时沉淀产品决策。
+A product-driven AI programming collaboration skill — automatically manages product SPEC files and persistently captures product decisions in real time.
 
-## 它能帮你做什么？
+[中文](./README_ZH.md)
 
-在与 AI 协作开发的过程中，产品决策往往散落在对话历史里，难以追溯。SuperBot 解决这个问题：
+## What does it do?
 
-- **自动识别产品决策**：AI 在对话中识别你确认的需求、架构、UI 规范等关键决策
-- **实时写入 SPEC 文件**：决策自动沉淀到结构化的产品文档中
-- **统一产品认知**：任何人（或 AI）阅读 SPEC 就能快速理解产品应该是什么样
+When collaborating with AI on development, product decisions often get scattered across conversation history and become hard to trace. SuperBot solves this:
 
-## 安装
+- **Auto-identifies product decisions**: AI recognizes confirmed requirements, architecture choices, UI specs, and other key decisions during conversation
+- **Writes to SPEC files in real time**: Decisions are automatically distilled into structured product documents
+- **Unified product understanding**: Anyone (or any AI) can read the SPEC files to quickly understand what the product should be
 
-```bash
-npx skills add https://github.com/nileader/superbot --skill superbot
-```
-
-## 功能特性
-
-- 新 session 自动激活，读取 `.superbot/superbot.json` 配置
-- 管理 `spec_dir` 下的 6 个 SPEC 文件（产品定义、用户故事、功能清单、UI规范、技术架构、其他）
-- 对话中实时将产品决策沉淀到 SPEC 文件
-- 支持手动 `/superbot` 调用
-- 支持 `/superbot config` 交互式修改配置
-
-## 快速开始
-
-### 1. 安装技能
+## Installation
 
 ```bash
 npx skills add https://github.com/nileader/superbot --skill superbot
 ```
 
-### 2. 配置项目（可选）
+## Features
 
-在项目根目录创建 `.superbot/superbot.json`：
+- Auto-activates on new sessions, reads `.superbot/superbot.json` config
+- Manages 6 SPEC files under `spec_dir` (product definition, user story, feature list, UI spec, tech spec, others)
+- Captures product decisions into SPEC files in real time during conversation
+- Manual invocation via `/superbot`
+- Interactive config update via `/superbot config`
+- Batch SPEC update via `/superbot update spec` — extracts all valuable decisions from current session and updates SPEC files
+
+## Quick Start
+
+### 1. Install the skill
+
+```bash
+npx skills add https://github.com/nileader/superbot --skill superbot
+```
+
+### 2. Configure your project (optional)
+
+Create `.superbot/superbot.json` in your project root:
 
 ```json
 {
@@ -42,41 +45,41 @@ npx skills add https://github.com/nileader/superbot --skill superbot
 }
 ```
 
-> 如果不创建配置文件，首次使用时 AI 会引导你完成初始化。
+> If the config file doesn't exist, the AI will guide you through initialization on first use.
 
-### 3. 开始使用
+### 3. Start using
 
-- 手动调用：在对话中输入 `/superbot`
-- 或配置自动触发（见下方）
+- Manual: type `/superbot` in the conversation
+- Or configure auto-trigger (see below)
 
-## 配置说明
+## Configuration
 
-| 字段 | 说明 | 默认值 |
-|------|------|--------|
-| `spec_dir` | SPEC 文件存放目录 | `./spec` |
+| Field | Description | Default |
+|-------|-------------|--------|
+| `spec_dir` | Directory to store SPEC files | `./spec` |
 
-运行时可通过 `/superbot config` 交互式修改配置。
+Run `/superbot config` at any time for interactive configuration updates.
 
-## SPEC 文件体系
+## SPEC File System
 
-SuperBot 在 `spec_dir` 目录下维护以下 6 个文件：
+SuperBot maintains the following 6 files under `spec_dir`:
 
-| 文件 | 用途 |
-|------|------|
-| `01-产品定义.md` | 产品定位、整体目标、核心用户群 |
-| `02-用户故事.md` | 用户故事、角色、使用场景 |
-| `03-功能清单.md` | 功能模块划分、优先级、依赖关系 |
-| `04-UI设计规范.md` | 交互流程、页面结构、UI 规范 |
-| `05-技术架构规范.md` | 技术选型、架构风格、非功能性要求 |
-| `06-其他.md` | 其他对产品认知有帮助的信息 |
+| File | Purpose |
+|------|---------|
+| `01-product-definition.md` | Product positioning, overall goals, core user groups |
+| `02-user-story.md` | User stories, roles, usage scenarios |
+| `03-feature-list.md` | Feature module breakdown, priorities, dependencies |
+| `04-ui-design-spec.md` | Interaction flows, page structure, UI specs |
+| `05-tech-spec.md` | Tech stack, architecture style, non-functional requirements |
+| `06-others.md` | Other information helpful for product understanding |
 
-> 英文版文件名：`01-product-definition.md`, `02-user-story.md`, `03-feature-list.md`, `04-ui-design-spec.md`, `05-tech-spec.md`, `06-others.md`
+> Chinese filename variants: `01-产品定义.md`, `02-用户故事.md`, `03-功能清单.md`, `04-UI设计规范.md`, `05-技术架构规范.md`, `06-其他.md`
 
-## 自动触发配置
+## Auto-Trigger Configuration
 
 ### Claude Code
 
-在 `~/.claude/settings.json` 中配置 `SessionStart` 钩子，通过 `cat` 直接将 SKILL.md 内容注入 Claude 上下文：
+Add a `SessionStart` hook to `~/.claude/settings.json`. Using `cat` pipes the full SKILL.md content directly into Claude's context:
 
 ```json
 {
@@ -97,20 +100,20 @@ SuperBot 在 `spec_dir` 目录下维护以下 6 个文件：
 }
 ```
 
-> 注意：需要先将 `skills/superbot/SKILL.md` 复制到 `~/.claude/skills/superbot/` 目录下。
-> `matcher: "startup"` 表示只在全新会话启动时触发，不在 resume / compact 时重复注入。
+> Note: Copy `skills/superbot/SKILL.md` to `~/.claude/skills/superbot/` first.
+> `matcher: "startup"` ensures the hook only fires on fresh sessions, not on resume or compact.
 
 ### OpenClaw / OpenCode
 
-在各平台配置文件中设置 session init hook，指向本技能的 `SKILL.md` 路径。
+Set a session init hook in each platform's config file, pointing to this skill's `SKILL.md` path.
 
 ### Qoder
 
-在 `.qoder/skills/` 目录下安装技能后，通过 session 启动配置自动加载。
+Install the skill under `.qoder/skills/` and it will auto-load via the session startup configuration.
 
-## 协作技能
+## Companion Skill
 
-SuperBot 可独立使用。如果安装了 `using-superpowers` 技能，会自动协同工作以获得更好的体验。
+SuperBot works standalone. If `using-superpowers` skill is also installed, they collaborate automatically for an enhanced experience.
 
 ## License
 
