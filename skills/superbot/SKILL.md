@@ -46,6 +46,31 @@ Configuration for auto-triggering this skill when a new session starts on differ
 
 > If auto-trigger is not configured, the skill can still be invoked manually via `/superbot`.
 
+### Help Command
+User types `/superbot help` or `/superbot h` to see a quick reference of all available commands and their capabilities.
+
+**When invoked, respond with:**
+
+```
+SuperBot Commands:
+
+/superbot              Activate the skill, start product-driven collaboration
+/superbot h            Show this help
+/superbot config       Interactively update project config (spec_dir, etc.)
+/superbot init         Force-init config and missing SPEC files
+/superbot update spec  Batch-extract product decisions from this session and write to SPEC
+
+SPEC Files (located at ${spec_dir}):
+01-product-definition.md  Product positioning, goals, user groups
+02-user-story.md          User stories, roles, scenarios
+03-feature-list.md        Feature modules, priorities, dependencies
+04-ui-design-spec.md      Interaction flows, page structure, UI specs
+05-tech-spec.md           Tech stack, architecture, non-functional requirements
+06-others.md              Other product knowledge
+
+Usage: Make decisions naturally in conversation, and I'll persist confirmed decisions into the corresponding SPEC files.
+```
+
 ---
 
 ## 1. Collaboration Mode & Permissions
@@ -118,18 +143,24 @@ Template files are located at `skills/superbot/templates/en/`. When creating new
 
 ### 2. Session Startup Process
 
+**Important: The SPEC directory is where users most often get confused. Every session, you must explicitly tell the user the full path of the SPEC directory and the status of its files.**
+
 > Note: The following steps (reading SPEC, communicating conflicts) are executed after the user sends their first message. If currently in a session startup hook phase without user interaction context, only complete file reading and temporarily store all conflicts/questions, then raise them together when the user's message arrives.
 
 At the **start of every new session**, perform the following:
 
 1. **Read and analyze** all SPEC files in `${spec_dir}`;
-2. **Build a unified understanding**, including:
+2. **Output a startup summary** (immediately after the user's first message):
+   - Tell the user the full path of the SPEC directory (e.g., `SPEC directory: ./spec`);
+   - List which SPEC files exist and which are missing;
+   - If any files are missing, inform the user they will be auto-created from templates;
+3. **Build a unified understanding**, including:
    - Product positioning and overall goals;
    - Core user groups and key user stories;
    - Feature module breakdown and priorities;
    - UI/interaction constraints and style;
    - Technical architecture, tech stack, non-functional requirements;
-3. **Proactively communicate**: If any of the following are found, you **must** raise them with the user for confirmation:
+4. **Proactively communicate**: If any of the following are found, you **must** raise them with the user for confirmation:
    - Content is unclear or has multiple possible interpretations;
    - Internal contradictions within a single document;
    - Conflicting definitions across different documents for the same concept/feature/flow;
@@ -204,7 +235,12 @@ You should:
 
 ## 4. Comprehensive Workflow
 
-1. **Startup / New Session**:
+1. **Help (`/superbot help`)**:
+   - Display all available commands and their capabilities;
+   - Show SPEC file list with brief descriptions;
+   - Explain usage pattern.
+
+2. **Startup / New Session**:
    - If `using-superpowers` is available, activate it;
    - Read `.superbot/superbot.json`:
      - If exists: use silently
@@ -213,29 +249,29 @@ You should:
    - Read and analyze all SPEC files;
    - Communicate any conflicts or questions first.
 
-2. **Config Update (`/superbot config`)**:
+3. **Config Update (`/superbot config`)**:
    - Display current configuration;
    - Guide user through interactive update of each field;
    - Save updated configuration.
 
-3. **Force Initialization (`/superbot init`)**:
+4. **Force Initialization (`/superbot init`)**:
    - If config exists: display current config and ask user if they want to re-initialize;
    - If config does not exist: guide user through interactive initialization (same as first-time setup);
    - After initialization, check and create any missing SPEC files from templates;
    - Confirm completion to user.
 
-4. **Batch SPEC Update (`/superbot update spec`)**:
+5. **Batch SPEC Update (`/superbot update spec`)**:
    - Collect all conversations between user and AI in the current session;
    - Extract valuable product decisions that should be persisted (targeting final product state);
    - Distill into structured content following the "Persistence Decision Matrix";
    - Update corresponding SPEC files;
    - Notify user with a summary of updates (which files, what content).
 
-5. **Design & Development**:
+6. **Design & Development**:
    - All proposals for APIs, pages, and architecture must align with the SPEC;
    - If deviating from or extending the SPEC, point it out and seek user confirmation.
 
-6. **Knowledge Base Maintenance**:
+7. **Knowledge Base Maintenance**:
    - Continuously extract product insights from conversations;
    - Write them directly into the corresponding SPEC documents;
    - Keep consensus aligned through iterative SPEC updates.
