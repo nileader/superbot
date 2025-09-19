@@ -1,6 +1,6 @@
 ---
 name: superbot
-version: 0.0.4
+version: 0.0.5
 description: Product-driven AI programming collaboration skill. Automatically activates on each new session, reads .superbot/superbot.json for project config, manages the SPEC file system under spec_dir, and persistently writes product decisions into SPEC files during conversations.
 ---
 

@@ -1,6 +1,6 @@
 ---
 name: superbot
-version: 0.0.4
+version: 0.0.5
 description: 产品驱动的 AI 编程协作技能。在每次新 session 启动时自动激活，读取 .superbot/superbot.json 获取项目配置，管理 spec_dir 下的 SPEC 文件体系，并在对话中实时将产品决策沉淀到 SPEC 文件。
 ---
 
