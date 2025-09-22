@@ -11,21 +11,16 @@ description: Product-driven AI programming collaboration skill. Automatically ac
 ### Manual Trigger
 User types `/superbot` in the conversation to invoke this skill. All agentic tools that support skills use this method.
 
-### Config Command
-User types `/superbot config` to interactively update the configuration file.
-
-### Init Command
-User types `/superbot init` to force configuration initialization for a project. Use this when:
-- Setting up SuperBot for a project for the first time
-- Wanting to re-initialize the configuration from scratch
+### Config Update Command
+User types `/superbot config update` to interactively update the configuration file.
 
 **Behavior:**
-- If `.superbot/superbot.json` already exists: display current config and ask if user wants to re-initialize
-- If config does not exist: guide user through interactive initialization (same flow as first-time setup)
-- After initialization, check and create any missing SPEC files from templates
+- If `.superbot/superbot.json` does NOT exist: automatically enter initialization flow (same as first-time setup)
+- If config already exists: display current values and ask user to confirm or modify each field
+- After config is saved, check and create any missing SPEC files from templates
 
-### Update Spec Command
-User types `/superbot update spec` to trigger a batch extraction and update of SPEC files based on the current session's conversation history.
+### Spec Update Command
+User types `/superbot spec update` to trigger a batch extraction and update of SPEC files based on the current session's conversation history.
 
 **How it works:**
 1. Collect all user-AI conversations in the current session
@@ -56,9 +51,8 @@ SuperBot Commands:
 
 /superbot              Activate the skill, start product-driven collaboration
 /superbot h            Show this help
-/superbot config       Interactively update project config (spec_dir, etc.)
-/superbot init         Force-init config and missing SPEC files
-/superbot update spec  Batch-extract product decisions from this session and write to SPEC
+/superbot config update  Interactively update project config (spec_dir, etc.)
+/superbot spec update    Batch-extract product decisions from this session and write to SPEC
 
 SPEC Files (located at ${spec_dir}):
 01-product-definition.md  Product positioning, goals, user groups
@@ -113,13 +107,15 @@ Read the `.superbot/superbot.json` file in the current project directory.
 3. After all fields are confirmed, create the config file
 4. Proceed with the rest of the startup flow
 
-#### Interactive Config Update (`/superbot config`)
+#### Interactive Config Update (`/superbot config update`)
 
-When the user invokes `/superbot config`:
-1. Read the current configuration (or use defaults if file doesn't exist)
-2. Display current values for each field
-3. Ask the user to confirm or modify each field **one by one**
-4. Save the updated configuration to `.superbot/superbot.json`
+When the user invokes `/superbot config update`:
+1. Check if `.superbot/superbot.json` exists:
+   - If NOT: guide user through interactive initialization (explain SuperBot purpose and each field, then create config)
+   - If exists: display current values for each field
+2. Ask the user to confirm or modify each field **one by one**
+3. Save the updated configuration to `.superbot/superbot.json`
+4. Check and create any missing SPEC files from templates
 5. Confirm the update is complete
 
 ---
@@ -249,29 +245,24 @@ You should:
    - Read and analyze all SPEC files;
    - Communicate any conflicts or questions first.
 
-3. **Config Update (`/superbot config`)**:
-   - Display current configuration;
-   - Guide user through interactive update of each field;
-   - Save updated configuration.
+3. **Config Update (`/superbot config update`)**:
+   - If config does NOT exist: guide user through interactive initialization (explain purpose and each field);
+   - If config exists: display current configuration and guide user through interactive update of each field;
+   - Save updated configuration;
+   - Check and create any missing SPEC files from templates.
 
-4. **Force Initialization (`/superbot init`)**:
-   - If config exists: display current config and ask user if they want to re-initialize;
-   - If config does not exist: guide user through interactive initialization (same as first-time setup);
-   - After initialization, check and create any missing SPEC files from templates;
-   - Confirm completion to user.
-
-5. **Batch SPEC Update (`/superbot update spec`)**:
+4. **Batch SPEC Update (`/superbot spec update`)**:
    - Collect all conversations between user and AI in the current session;
    - Extract valuable product decisions that should be persisted (targeting final product state);
    - Distill into structured content following the "Persistence Decision Matrix";
    - Update corresponding SPEC files;
    - Notify user with a summary of updates (which files, what content).
 
-6. **Design & Development**:
+5. **Design & Development**:
    - All proposals for APIs, pages, and architecture must align with the SPEC;
    - If deviating from or extending the SPEC, point it out and seek user confirmation.
 
-7. **Knowledge Base Maintenance**:
+6. **Knowledge Base Maintenance**:
    - Continuously extract product insights from conversations;
    - Write them directly into the corresponding SPEC documents;
    - Keep consensus aligned through iterative SPEC updates.
