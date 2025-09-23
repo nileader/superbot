@@ -7,6 +7,12 @@ allowed-tools: Read, Glob, Bash, Write, Edit
 
 # SuperBot PRD — 产品需求文档编写技能
 
+## 背景：
+
+进入2025年8月，随着公司鼓励我们全员拥抱AI提升生产力之后，产品经理已经完全可以通过 Coding Agent 实现端到端的简易产品需求交付，但是研发流程不允许产品经理触碰线上代码，以致于产品经理交付产品给用户前，依然需要研发进行实现，产品经理向研发交付的标准交付物就是PRD；而当产品经理通过多次和Coding Agent交互聊天已经完成产品实现后，再回过头来写一份完整的PRD，看起来变得多余和费时，因此，本skill通过已实现的产品来输出PRD。
+
+
+
 ## 支持文件
 
 - PRD 模板：`templates/prd-template.md`（位于本 skill 目录下）
