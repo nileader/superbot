@@ -11,14 +11,14 @@
   "plugins": [
     {
       "name": "superbot",
-      "source": "skills/superbot",
+      "source": "git@github.com:nileader/superbot.git#subdirectory=skills/superbot",
       "description": "产品驱动的 AI 编程协作技能。在每次新 session 启动时自动激活，通过 /superbot:superbot 触发。读取 .superbot/superbot.json 获取项目配置，管理 spec_dir 下的 SPEC 文件体系，并在对话中实时将产品决策沉淀到 SPEC 文件。",
       "category": "productivity",
       "tags": ["product", "spec", "prd", "collaboration"]
     },
     {
       "name": "prd",
-      "source": "skills/prd",
+      "source": "git@github.com:nileader/superbot.git#subdirectory=skills/prd",
       "description": "PRD 编写技能。将已实现的功能 Demo 转化为标准 PRD 文档，通过 /superbot:prd 触发，严格基于代码分析生成或更新 PRD，作为产品经理与研发之间的正式交付物。",
       "category": "documentation",
       "tags": ["prd", "documentation", "product"]
