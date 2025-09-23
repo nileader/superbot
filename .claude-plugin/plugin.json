@@ -1,0 +1,18 @@
+{
+  "name": "superbot",
+  "description": "Product Manager skills library for Claude Code: create prd、product SPEC and product proposal...",
+  "version": "0.0.5",
+  "author": {
+    "name": "nileader",
+    "email": "nileader@gmail.com"
+  },
+  "homepage": "https://github.com/nileader/superbot",
+  "repository": "https://github.com/nileader/superbot",
+  "license": "MIT",
+  "keywords": [
+    "product-manager",
+    "prd",
+    "skills",
+    "product-proposal"
+  ]
+}

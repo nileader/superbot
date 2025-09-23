@@ -1,6 +1,6 @@
 {
   "name": "superbot",
-  "version": "0.0.4",
+  "version": "0.0.5",
   "description": "产品驱动的 AI 编程协作技能 — 自动管理产品 SPEC 文件，实时沉淀产品决策",
   "plugins": [
     {
@@ -9,7 +9,15 @@
         "source": "directory",
         "path": "skills/superbot"
       },
-      "description": "产品驱动的 AI 编程协作技能。在每次新 session 启动时自动激活，读取 .superbot/superbot.json 获取项目配置，管理 spec_dir 下的 SPEC 文件体系，并在对话中实时将产品决策沉淀到 SPEC 文件。"
+      "description": "产品驱动的 AI 编程协作技能。在每次新 session 启动时自动激活，通过 /superbot:superbot 触发。读取 .superbot/superbot.json 获取项目配置，管理 spec_dir 下的 SPEC 文件体系，并在对话中实时将产品决策沉淀到 SPEC 文件。"
+    },
+    {
+      "name": "prd",
+      "source": {
+        "source": "directory",
+        "path": "skills/prd"
+      },
+      "description": "PRD 编写技能。将已实现的功能 Demo 转化为标准 PRD 文档，通过 /superbot:prd 触发，严格基于代码分析生成或更新 PRD，作为产品经理与研发之间的正式交付物。"
     }
   ]
 }
