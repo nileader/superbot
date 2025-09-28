@@ -14,9 +14,22 @@
 
 ## 安装
 
+- 如果安装superbot整个插件，则依次执行：
+```bash
+/plugin marketplace add nileader/superbot
+
+/plugin install superbot
+
+/reload-plugins
+```
+
+- 如果仅安装某些skill，则选择性执行下述命令
 ```bash
 npx skills add https://github.com/nileader/superbot --skill superbot
+
+npx skills add https://github.com/nileader/superbot --skill prd
 ```
+
 
 ## 功能特性
 
