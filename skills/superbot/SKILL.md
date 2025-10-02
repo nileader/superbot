@@ -83,11 +83,7 @@ SuperBot works independently. If `using-superpowers` skill is installed, it will
 
 If `using-superpowers` is not installed or cannot be loaded, **do not block the flow**. Continue normally without any warning.
 
-### 3. File Read Permissions
-
-All `Read` operations on files within the project root directory and its subdirectories do **not** require user approval. This is a basic working permission.
-
-### 4. Configuration Management
+### 3. Configuration Management
 
 #### Config File Location
 
