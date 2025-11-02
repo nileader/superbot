@@ -248,10 +248,11 @@ You should:
    - Check and create any missing SPEC files from templates.
 
 4. **Batch SPEC Update (`/superbot spec update`)**:
+   - **First**: Read `.superbot/superbot.json` to get the configured `spec_dir`. Use this as the target directory for all SPEC file operations. Do NOT fall back to the default `./spec` when a custom path is configured;
    - Collect all conversations between user and AI in the current session;
    - Extract valuable product decisions that should be persisted (targeting final product state);
    - Distill into structured content following the "Persistence Decision Matrix";
-   - Update corresponding SPEC files;
+   - Update corresponding SPEC files in the configured `spec_dir`;
    - Notify user with a summary of updates (which files, what content).
 
 5. **Design & Development**:
