@@ -51,7 +51,7 @@ Read the `.superbot/superbot.json` file in the current project directory to obta
 | `workspacedir` | Working root directory |
 | `spec_dir` | SPEC directory, used to persist core product definitions |
 
-If `.superbot/superbot.json` does not exist, create it with default configuration:
+If `.superbot/superbot.json` does not exist or any field is missing from the config, fill in the default values first without blocking the flow. The default configuration is:
 
 ```json
 {
@@ -60,7 +60,7 @@ If `.superbot/superbot.json` does not exist, create it with default configuratio
 }
 ```
 
-If any field is missing from the config, fill in the default values first without blocking the flow. After the user sends their first message, print the current configuration and ask the user to confirm or modify each field one by one.
+After the user sends their first message, print the current configuration and ask the user to confirm or modify each field one by one.
 
 ---
 

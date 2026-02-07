@@ -30,21 +30,22 @@ npx skills add <this-repo-url> --skill superbot
 
 ### Claude Code
 
-在 `.claude/settings.json` 中配置 `SessionStart` 钩子：
+在 `.claude/settings.json` 中配置 `on_session_start` 钩子，通过 `Skill` 工具激活 `superbot`：
 
 ```json
 {
   "hooks": {
-    "SessionStart": [{
+    "on_session_start": [{
       "hooks": [{
-        "type": "command",
-        "command": "echo '{\"systemMessage\":\"SuperBot 技能已激活\",\"additionalContext\":\"SuperBot 技能已激活。请按照 SKILL.md 中的指令执行。\"}'",
-        "timeout": 5
+        "type": "skill",
+        "skill": "superbot"
       }]
     }]
   }
 }
 ```
+
+> 注意：`using-superpowers` 技能会在用户发送第一条消息时尝试激活，不会在 hook 阶段调用 Skill tool，避免启动报错。
 
 ### OpenClaw / OpenCode
 
