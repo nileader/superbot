@@ -1,5 +1,6 @@
 ---
 name: superbot
+version: 0.0.3
 description: Product-driven AI programming collaboration skill. Automatically activates on each new session, reads .superbot/superbot.json for project config, manages the SPEC file system under spec_dir, and persistently writes product decisions into SPEC files during conversations.
 ---
 
@@ -10,14 +11,18 @@ description: Product-driven AI programming collaboration skill. Automatically ac
 ### Manual Trigger
 User types `/superbot` in the conversation to invoke this skill. All agentic tools that support skills use this method.
 
+### Config Command
+User types `/superbot config` to interactively update the configuration file.
+
 ### Auto-Trigger (Per Platform)
 Configuration for auto-triggering this skill when a new session starts on different platforms:
 
 | Platform | Auto-Trigger Method |
 |----------|---------------------|
-| **Claude Code** | Configure hooks in `.claude/settings.json`, use the `on_session_start` hook to call the `Skill` tool to activate `superbot` |
+| **Claude Code** | Configure `SessionStart` hook (matcher: `startup`) in `~/.claude/settings.json`, use `cat` to pipe SKILL.md content directly into Claude's context |
 | **OpenClaw** | Set a session startup hook in OpenClaw's config, pointing to this skill's path |
 | **OpenCode** | Set a session init hook in OpenCode's config to load this skill |
+| **Qoder** | Install the skill under `.qoder/skills/`, it will auto-load via session startup config |
 | **Other Platforms** | Use the platform's session lifecycle hooks to load this SKILL.md on session creation |
 
 > If auto-trigger is not configured, the skill can still be invoked manually via `/superbot`.
@@ -34,33 +39,44 @@ At the start of a session, you **must** explicitly inform the user that this ski
 
 ### 2. using-superpowers Collaboration
 
-`using-superpowers` is the core collaboration skill for this session. **Do not attempt to activate it during the session startup hook phase.** Instead, try to activate it **when the user sends their first message**. If activation succeeds, prioritize it for handling all subsequent requests.
+SuperBot works independently. If `using-superpowers` skill is installed, it will collaborate automatically for a better experience.
 
-If `using-superpowers` is not properly installed or cannot be loaded, **do not block the flow**. Briefly remind the user in your response: "It is recommended to install the using-superpowers skill for the full experience," then continue normally.
+**Do not attempt to activate `using-superpowers` during the session startup hook phase.** Instead, try to activate it **when the user sends their first message**. If activation succeeds, prioritize it for handling all subsequent requests.
+
+If `using-superpowers` is not installed or cannot be loaded, **do not block the flow**. Continue normally without any warning.
 
 ### 3. File Read Permissions
 
 All `Read` operations on files within the project root directory and its subdirectories do **not** require user approval. This is a basic working permission.
 
-### 4. Reading the Config File
+### 4. Configuration Management
 
-Read the `.superbot/superbot.json` file in the current project directory to obtain the following configuration:
+#### Config File Location
 
-| Field | Description |
-|-------|-------------|
-| `workspacedir` | Working root directory |
-| `spec_dir` | SPEC directory, used to persist core product definitions |
+Read the `.superbot/superbot.json` file in the current project directory.
 
-If `.superbot/superbot.json` does not exist or any field is missing from the config, fill in the default values first without blocking the flow. The default configuration is:
+| Field | Description | Default |
+|-------|-------------|---------|  
+| `spec_dir` | SPEC directory for persisting core product definitions | `./spec` |
 
-```json
-{
-  "workspacedir": ".",
-  "spec_dir": "./spec"
-}
-```
+#### Config Initialization
 
-After the user sends their first message, print the current configuration and ask the user to confirm or modify each field one by one.
+**If `.superbot/superbot.json` exists**: Read and use the configuration silently. Do NOT prompt the user to confirm.
+
+**If `.superbot/superbot.json` does NOT exist**: Guide the user through initialization:
+1. Explain what SuperBot does and the purpose of each config field
+2. Ask the user to confirm or customize each field **one by one**
+3. After all fields are confirmed, create the config file
+4. Proceed with the rest of the startup flow
+
+#### Interactive Config Update (`/superbot config`)
+
+When the user invokes `/superbot config`:
+1. Read the current configuration (or use defaults if file doesn't exist)
+2. Display current values for each field
+3. Ask the user to confirm or modify each field **one by one**
+4. Save the updated configuration to `.superbot/superbot.json`
+5. Confirm the update is complete
 
 ---
 
@@ -68,16 +84,18 @@ After the user sends their first message, print the current configuration and as
 
 ### 1. File Inventory
 
-Maintain the following 6 files under `${spec_dir}` (create empty files if missing):
+Maintain the following 6 files under `${spec_dir}` (create from templates if missing):
 
 | File | Purpose |
-|------|---------|
-| `01-产品定义.md` | Product positioning, overall goals, core user groups |
-| `02-用户故事.md` | User stories, roles, usage scenarios |
-| `03-功能清单.md` | Feature module breakdown, priorities, dependencies |
-| `04-UI设计规范.md` | Interaction flows, page structure, UI specs, component constraints |
-| `05-技术架构规范.md` | Tech stack, architecture style, middleware, non-functional requirements |
-| `06-其他.md` | Other information helpful for product understanding |
+|------|---------|  
+| `01-product-definition.md` | Product positioning, overall goals, core user groups |
+| `02-user-story.md` | User stories, roles, usage scenarios |
+| `03-feature-list.md` | Feature module breakdown, priorities, dependencies |
+| `04-ui-design-spec.md` | Interaction flows, page structure, UI specs, component constraints |
+| `05-tech-spec.md` | Tech stack, architecture style, middleware, non-functional requirements |
+| `06-others.md` | Other information helpful for product understanding |
+
+Template files are located at `skills/superbot/templates/en/`. When creating new SPEC files, use these templates as the initial content.
 
 ### 2. Session Startup Process
 
@@ -168,17 +186,24 @@ You should:
 ## 4. Comprehensive Workflow
 
 1. **Startup / New Session**:
-   - Activate the `using-superpowers` skill;
-   - Read `.superbot/superbot.json`, confirm configuration;
-   - Check and create any missing SPEC files;
+   - If `using-superpowers` is available, activate it;
+   - Read `.superbot/superbot.json`:
+     - If exists: use silently
+     - If not exists: guide user through interactive initialization
+   - Check and create any missing SPEC files (using templates);
    - Read and analyze all SPEC files;
    - Communicate any conflicts or questions first.
 
-2. **Design & Development**:
+2. **Config Update (`/superbot config`)**:
+   - Display current configuration;
+   - Guide user through interactive update of each field;
+   - Save updated configuration.
+
+3. **Design & Development**:
    - All proposals for APIs, pages, and architecture must align with the SPEC;
    - If deviating from or extending the SPEC, point it out and seek user confirmation.
 
-3. **Knowledge Base Maintenance**:
+4. **Knowledge Base Maintenance**:
    - Continuously extract product insights from conversations;
    - Write them directly into the corresponding SPEC documents;
    - Keep consensus aligned through iterative SPEC updates.

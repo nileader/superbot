@@ -1,5 +1,6 @@
 ---
 name: superbot
+version: 0.0.3
 description: 产品驱动的 AI 编程协作技能。在每次新 session 启动时自动激活，读取 .superbot/superbot.json 获取项目配置，管理 spec_dir 下的 SPEC 文件体系，并在对话中实时将产品决策沉淀到 SPEC 文件。
 ---
 
@@ -10,14 +11,18 @@ description: 产品驱动的 AI 编程协作技能。在每次新 session 启动
 ### 手动触发
 用户在对话中输入 `/superbot` 调用本技能。所有支持技能的 Agentic 工具均使用此方式。
 
+### 配置命令
+用户输入 `/superbot config` 可交互式更新配置文件。
+
 ### 自动触发（按平台）
 不同 Agentic 工具在新 session 启动时自动触发本技能的配置方式：
 
 | 平台 | 自动触发方式 |
 |------|-------------|
-| **Claude Code** | 在 `.claude/settings.json` 中配置 hooks，使用 `on_session_start` 钩子调用 `Skill` 工具激活 `superbot` |
+| **Claude Code** | 在 `~/.claude/settings.json` 中配置 `SessionStart` 钩子（matcher: `startup`），用 `cat` 直接将 SKILL.md 内容注入 Claude 上下文 |
 | **OpenClaw** | 在 OpenClaw 的配置文件中设置 session 启动钩子，指向本技能路径 |
 | **OpenCode** | 在 OpenCode 的配置中设置 session init hook，加载本技能 |
+| **Qoder** | 在 `.qoder/skills/` 目录下安装技能后，通过 session 启动配置自动加载 |
 | **其他平台** | 使用平台提供的 session 生命周期钩子，在 session 创建时加载本 SKILL.md |
 
 > 如果自动触发未配置，技能仍可通过 `/superbot` 手动调用。
@@ -34,33 +39,44 @@ description: 产品驱动的 AI 编程协作技能。在每次新 session 启动
 
 ### 2. using-superpowers 协作
 
-`using-superpowers` 是本会话的核心协作技能。**不要在 session 启动 hook 阶段尝试激活它。** 而是在**用户发送第一条消息时**再尝试激活。如果激活成功，在后续交互中优先通过该技能处理请求。
+SuperBot 可独立工作。如果安装了 `using-superpowers` 技能，会自动协同以获得更好的体验。
 
-如果 `using-superpowers` 技能没有正确安装或无法激活，**不要阻断流程**。在回复中简短提示用户"建议安装 using-superpowers 技能以获得完整体验"，然后继续正常执行本技能的其余步骤。
+**不要在 session 启动 hook 阶段尝试激活 `using-superpowers`。** 而是在**用户发送第一条消息时**再尝试激活。如果激活成功，在后续交互中优先通过该技能处理请求。
+
+如果 `using-superpowers` 技能未安装或无法激活，**不要阻断流程**。直接继续正常执行，无需警告。
 
 ### 3. 文件读取权限
 
 对本项目根目录及子目录中所有文件的 `读取` 操作，不需要经过用户允许。这是基本工作权限。
 
-### 4. 读取配置文件
+### 4. 配置管理
 
-读取当前项目目录下的 `.superbot/superbot.json` 文件，获取以下配置：
+#### 配置文件位置
 
-| 字段 | 说明 |
-|------|------|
-| `workspacedir` | 工作根目录 |
-| `spec_dir` | SPEC 目录，用于沉淀产品核心定义 |
+读取当前项目目录下的 `.superbot/superbot.json` 文件。
 
-如果 `.superbot/superbot.json` 不存在或配置中的字段缺失，先使用默认值填充，不要阻塞流程。默认配置如下：
+| 字段 | 说明 | 默认值 |
+|------|------|--------|
+| `spec_dir` | SPEC 目录，用于沉淀产品核心定义 | `./spec` |
 
-```json
-{
-  "workspacedir": ".",
-  "spec_dir": "./spec"
-}
-```
+#### 配置初始化
 
-在用户发送第一条消息后，打印当前配置并逐个询问用户确认或修改。
+**如果 `.superbot/superbot.json` 已存在**：静默读取并使用配置。不要提示用户确认。
+
+**如果 `.superbot/superbot.json` 不存在**：引导用户完成初始化：
+1. 说明 SuperBot 的作用和每个配置字段的用途
+2. **逐个**询问用户确认或自定义每个字段
+3. 所有字段确认后，创建配置文件
+4. 继续执行后续启动流程
+
+#### 交互式配置更新（`/superbot config`）
+
+当用户调用 `/superbot config` 时：
+1. 读取当前配置（如文件不存在则使用默认值）
+2. 展示每个字段的当前值
+3. **逐个**询问用户确认或修改每个字段
+4. 保存更新后的配置到 `.superbot/superbot.json`
+5. 确认更新完成
 
 ---
 
@@ -68,7 +84,7 @@ description: 产品驱动的 AI 编程协作技能。在每次新 session 启动
 
 ### 1. 文件清单
 
-在 `${spec_dir}` 目录下维护以下 6 个文件（缺失则创建空文件）：
+在 `${spec_dir}` 目录下维护以下 6 个文件（缺失则从模板创建）：
 
 | 文件 | 用途 |
 |------|------|
@@ -78,6 +94,8 @@ description: 产品驱动的 AI 编程协作技能。在每次新 session 启动
 | `04-UI设计规范.md` | 交互流程、页面结构、UI 规范、组件约束 |
 | `05-技术架构规范.md` | 技术选型、架构风格、中间件、非功能性要求 |
 | `06-其他.md` | 其他对产品认知有帮助的信息 |
+
+模板文件位于 `skills/superbot/templates/zh/`。创建新的 SPEC 文件时，使用这些模板作为初始内容。
 
 ### 2. Session 启动流程
 
@@ -166,17 +184,24 @@ SPEC 目录是需要 **持续迭代维护** 的产品知识库。目标：
 ## 四、综合工作流
 
 1. **启动 / 新 session**：
-   - 激活 using-superpowers 技能；
-   - 读取 `.superbot/superbot.json`，确认配置；
-   - 检查并创建缺失的 SPEC 文件；
+   - 如果 `using-superpowers` 可用，激活它；
+   - 读取 `.superbot/superbot.json`：
+     - 如果存在：静默使用
+     - 如果不存在：引导用户完成交互式初始化
+   - 检查并创建缺失的 SPEC 文件（使用模板）；
    - 读取并分析所有 SPEC 文件；
    - 如有冲突或疑问，先沟通确认。
 
-2. **设计与开发**：
+2. **配置更新（`/superbot config`）**：
+   - 展示当前配置；
+   - 引导用户逐个更新每个字段；
+   - 保存更新后的配置。
+
+3. **设计与开发**：
    - 所有方案、接口、页面、架构建议与 SPEC 保持一致；
    - 如需偏离或扩展 SPEC，必须指出并征求用户确认。
 
-3. **知识库维护**：
+4. **知识库维护**：
    - 在对话中持续抽取可沉淀的产品认知；
    - 直接写入对应 SPEC 文档；
    - 通过不断迭代 SPEC，保持统一认知。
