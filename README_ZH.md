@@ -24,6 +24,7 @@ npx skills add https://github.com/nileader/superbot --skill superbot
 - 管理 `spec_dir` 下的 6 个 SPEC 文件（产品定义、用户故事、功能清单、UI规范、技术架构、其他）
 - 对话中实时将产品决策沉淀到 SPEC 文件
 - 支持手动 `/superbot` 调用
+- 支持 `/superbot init` 强制初始化 — 适用于首次使用或重新初始化
 - 支持 `/superbot config` 交互式修改配置
 - 支持 `/superbot update spec` 批量更新 SPEC — 从当前 session 提取所有有价值的决策并更新到 SPEC 文件
 

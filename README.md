@@ -24,6 +24,7 @@ npx skills add https://github.com/nileader/superbot --skill superbot
 - Manages 6 SPEC files under `spec_dir` (product definition, user story, feature list, UI spec, tech spec, others)
 - Captures product decisions into SPEC files in real time during conversation
 - Manual invocation via `/superbot`
+- Force initialization via `/superbot init` — for first-time setup or re-initialization
 - Interactive config update via `/superbot config`
 - Batch SPEC update via `/superbot update spec` — extracts all valuable decisions from current session and updates SPEC files
 
