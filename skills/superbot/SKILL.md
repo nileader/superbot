@@ -1,6 +1,6 @@
 ---
 name: superbot
-version: 0.0.3
+version: 0.0.4
 description: Product-driven AI programming collaboration skill. Automatically activates on each new session, reads .superbot/superbot.json for project config, manages the SPEC file system under spec_dir, and persistently writes product decisions into SPEC files during conversations.
 ---
 
@@ -13,6 +13,15 @@ User types `/superbot` in the conversation to invoke this skill. All agentic too
 
 ### Config Command
 User types `/superbot config` to interactively update the configuration file.
+
+### Update Spec Command
+User types `/superbot update spec` to trigger a batch extraction and update of SPEC files based on the current session's conversation history.
+
+**How it works:**
+1. Collect all user-AI conversations in the current session
+2. Extract valuable product decisions (requirements, architecture, UI specs, etc.) that should be persisted
+3. Distill them into structured content and update corresponding SPEC files
+4. Notify the user of what was updated (e.g., "Updated 01-product-definition.md: added core user group definition; Updated 03-feature-list.md: added 2 new features")
 
 ### Auto-Trigger (Per Platform)
 Configuration for auto-triggering this skill when a new session starts on different platforms:
@@ -199,11 +208,18 @@ You should:
    - Guide user through interactive update of each field;
    - Save updated configuration.
 
-3. **Design & Development**:
+3. **Batch SPEC Update (`/superbot update spec`)**:
+   - Collect all conversations between user and AI in the current session;
+   - Extract valuable product decisions that should be persisted (targeting final product state);
+   - Distill into structured content following the "Persistence Decision Matrix";
+   - Update corresponding SPEC files;
+   - Notify user with a summary of updates (which files, what content).
+
+4. **Design & Development**:
    - All proposals for APIs, pages, and architecture must align with the SPEC;
    - If deviating from or extending the SPEC, point it out and seek user confirmation.
 
-4. **Knowledge Base Maintenance**:
+5. **Knowledge Base Maintenance**:
    - Continuously extract product insights from conversations;
    - Write them directly into the corresponding SPEC documents;
    - Keep consensus aligned through iterative SPEC updates.
